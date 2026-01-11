@@ -13,6 +13,20 @@ class ArtworkRepository:
 
     def __init__(self, db: Database):
         self.db = db
+        self._ensure_artist_cut_column()
+
+    def _ensure_artist_cut_column(self):
+        """Ensure artist_cut_percent column exists for legacy databases."""
+        cursor = self.db.execute("PRAGMA table_info(artwork)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if "artist_cut_percent" not in columns:
+            try:
+                self.db.execute(
+                    "ALTER TABLE artwork ADD COLUMN artist_cut_percent REAL DEFAULT 10"
+                )
+            except Exception:
+                # If migration fails we leave DB untouched to avoid data loss
+                pass
 
     def get_all(self):
         """Get all artworks"""
@@ -55,31 +69,33 @@ class ArtworkRepository:
 
     def create(self, artist_id: int, title: str, description: str = "",
                type: str = "", year: int = None, price: float = None,
-               image: str = "", status: str = "available", notes: str = ""):
+               artist_cut_percent: float = 10.0, image: str = "",
+               status: str = "available", notes: str = ""):
         """Create new artwork"""
         cursor = self.db.execute(
             """
-            INSERT INTO artwork 
-            (artist_id, title, description, type, year, price, image, status, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO artwork
+            (artist_id, title, description, type, year, price, artist_cut_percent, image, status, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (artist_id, title, description, type, year, price, image, status, notes)
+            (artist_id, title, description, type, year, price, artist_cut_percent, image, status, notes)
         )
         return cursor.lastrowid
 
     def update(self, artwork_id: int, artist_id: int, title: str,
                description: str = "", type: str = "", year: int = None,
-               price: float = None, image: str = "", status: str = "available",
+               price: float = None, artist_cut_percent: float = 10.0,
+               image: str = "", status: str = "available",
                notes: str = ""):
         """Update artwork"""
         self.db.execute(
             """
             UPDATE artwork
             SET artist_id = ?, title = ?, description = ?, type = ?,
-                year = ?, price = ?, image = ?, status = ?, notes = ?
+                year = ?, price = ?, artist_cut_percent = ?, image = ?, status = ?, notes = ?
             WHERE id = ?
             """,
-            (artist_id, title, description, type, year, price, image, 
+            (artist_id, title, description, type, year, price, artist_cut_percent, image,
              status, notes, artwork_id)
         )
 

@@ -42,21 +42,27 @@ class AddArtworkDialog(QDialog):
         self.title_input = QLineEdit()
         self.description_input = QTextEdit()
         self.description_input.setMaximumHeight(100)
-        
+
         self.type_input = QLineEdit()
-        
+
         self.year_input = QSpinBox()
         self.year_input.setRange(1000, 2100)
         self.year_input.setValue(2024)
-        
+
         self.price_input = QDoubleSpinBox()
         self.price_input.setRange(0, 1000000)
         self.price_input.setDecimals(2)
         self.price_input.setPrefix("€ ")
-        
+
+        self.artist_cut_input = QDoubleSpinBox()
+        self.artist_cut_input.setRange(0, 100)
+        self.artist_cut_input.setDecimals(2)
+        self.artist_cut_input.setSuffix(" %")
+        self.artist_cut_input.setValue(10.0)
+
         self.status_combo = QComboBox()
         self.status_combo.addItems(["available", "sold", "exhibition", "reserved"])
-        
+
         self.notes_input = QTextEdit()
         self.notes_input.setMaximumHeight(100)
 
@@ -75,6 +81,7 @@ class AddArtworkDialog(QDialog):
         form.addRow("Type:", self.type_input)
         form.addRow("Year:", self.year_input)
         form.addRow("Price:", self.price_input)
+        form.addRow("Artist cut %:", self.artist_cut_input)
         form.addRow("Status:", self.status_combo)
         form.addRow("Image:", image_layout)
         form.addRow("Notes:", self.notes_input)
@@ -111,6 +118,7 @@ class AddArtworkDialog(QDialog):
             'type': self.type_input.text(),
             'year': self.year_input.value(),
             'price': self.price_input.value(),
+            'artist_cut_percent': self.artist_cut_input.value(),
             'status': self.status_combo.currentText(),
             'image': self.image_input.text(),
             'notes': self.notes_input.toPlainText()
@@ -128,19 +136,23 @@ class AddArtworkDialog(QDialog):
         self.title_input.setText(data.get('title', ''))
         self.description_input.setPlainText(data.get('description', ''))
         self.type_input.setText(data.get('type', ''))
-        
+
         year = data.get('year')
         if year:
             self.year_input.setValue(year)
-        
+
         price = data.get('price')
         if price:
             self.price_input.setValue(price)
-        
+
+        artist_cut = data.get('artist_cut_percent')
+        if artist_cut is not None:
+            self.artist_cut_input.setValue(float(artist_cut))
+
         status = data.get('status', 'available')
         idx = self.status_combo.findText(status)
         if idx >= 0:
             self.status_combo.setCurrentIndex(idx)
-        
+
         self.image_input.setText(data.get('image', ''))
         self.notes_input.setPlainText(data.get('notes', ''))

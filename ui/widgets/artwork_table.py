@@ -18,7 +18,7 @@ class ArtworkTableWidget(QWidget):
     """
     Widget displaying artworks in a table format
     """
-    
+
     artwork_selected = Signal(int)  # Emits artwork ID when selected
     artwork_double_clicked = Signal(int)  # Emits artwork ID on double click
 
@@ -31,11 +31,11 @@ class ArtworkTableWidget(QWidget):
 
         # Table widget
         self.table = QTableWidget()
-        self.table.setColumnCount(6)
+        self.table.setColumnCount(7)
         self.table.setHorizontalHeaderLabels([
-            "Title", "Artist", "Type", "Year", "Price", "Status"
+            "Title", "Artist", "Type", "Year", "Price", "Artist %", "Status"
         ])
-        
+
         # Table settings
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -66,37 +66,42 @@ class ArtworkTableWidget(QWidget):
     def load_artworks(self, artworks):
         """Load artworks into the table"""
         self.table.setRowCount(0)
-        
+
         for artwork in artworks:
             row = self.table.rowCount()
             self.table.insertRow(row)
-            
+
             # Title
             title_item = QTableWidgetItem(artwork.get('title', ''))
             title_item.setData(Qt.UserRole, artwork.get('id'))
             self.table.setItem(row, 0, title_item)
-            
+
             # Artist
             artist_item = QTableWidgetItem(artwork.get('artist_name', 'Unknown'))
             self.table.setItem(row, 1, artist_item)
-            
+
             # Type
             type_item = QTableWidgetItem(artwork.get('type', ''))
             self.table.setItem(row, 2, type_item)
-            
+
             # Year
             year = artwork.get('year')
             year_item = QTableWidgetItem(str(year) if year else '')
             self.table.setItem(row, 3, year_item)
-            
+
             # Price
             price = artwork.get('price')
             price_item = QTableWidgetItem(f"€ {price:.2f}" if price else '')
             self.table.setItem(row, 4, price_item)
-            
+
+            # Artist cut
+            cut = artwork.get('artist_cut_percent')
+            cut_item = QTableWidgetItem(f"{cut:.2f}%" if cut is not None else '')
+            self.table.setItem(row, 5, cut_item)
+
             # Status
             status_item = QTableWidgetItem(artwork.get('status', 'available'))
-            self.table.setItem(row, 5, status_item)
+            self.table.setItem(row, 6, status_item)
 
         # Resize columns to content
         self.table.resizeColumnsToContents()

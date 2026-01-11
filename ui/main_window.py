@@ -1,14 +1,19 @@
-from PySide6.QtWidgets import (
-    QMainWindow,
-    QWidget,
-    QHBoxLayout,
-    QVBoxLayout,
-    QListWidget,
-    QTableWidget,
-    QLabel,
-    QPushButton
-)
-from PySide6.QtCore import Qt
+from pathlib import Path
+import shutil
+
+from PySide6.QtWidgets import QMainWindow, QMessageBox
+
+from core.database import Database
+from core.paths import IMG_DIR, DB_PATH, ensure_paths
+from core.repositories.artist_repo import ArtistRepository
+from core.repositories.artwork_repo import ArtworkRepository
+from ui.controllers.artist_controller import ArtistController
+from ui.controllers.artwork_controller import ArtworkController
+from ui.layouts.main_layout import build_main_layout
+
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+TEST_IMAGES_DIR = PROJECT_ROOT / "assets" / "test_images"
 
 
 class MainWindow(QMainWindow):
@@ -20,54 +25,68 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Art Catalog Manager")
         self.resize(1200, 700)
+        self.setAcceptDrops(True)
+
+        ensure_paths()
+        self.db = Database(DB_PATH)
+        self.artist_repo = ArtistRepository(self.db)
+        self.artwork_repo = ArtworkRepository(self.db)
 
         self._build_ui()
+        self.artist_controller.load_artists()
+        self.artwork_controller.load_artworks()
 
     def _build_ui(self):
-        central = QWidget()
-        main_layout = QHBoxLayout()
+        central, refs = build_main_layout()
+        self.setCentralWidget(central)
 
-        # =========================
-        # ARTISTS LIST
-        # =========================
-        self.artist_list = QListWidget()
-        self.artist_list.setFixedWidth(250)
+        self.artist_list = refs["artist_list"]
+        self.artwork_table = refs["artwork_table"]
+        self.preview = refs["preview"]
+        self.add_btn = refs["add_btn"]
+        self.edit_btn = refs["edit_btn"]
+        self.delete_btn = refs["delete_btn"]
 
-        # =========================
-        # ARTWORK TABLE
-        # =========================
-        self.artwork_table = QTableWidget()
-        self.artwork_table.setColumnCount(4)
-        self.artwork_table.setHorizontalHeaderLabels(
-            ["Title", "Type", "Year", "Status"]
+        # Controllers
+        self.artwork_controller = ArtworkController(
+            self.artwork_repo,
+            self.artist_repo,
+            self.artwork_table,
+            self.preview,
+        )
+        self.artist_controller = ArtistController(
+            self.artist_repo,
+            self.artist_list,
+            self.artwork_controller.load_artworks,
         )
 
-        # =========================
-        # RIGHT PANEL
-        # =========================
-        right_panel = QVBoxLayout()
+        # Wiring
+        self.artist_list.artist_selected.connect(self.artist_controller.on_artist_selected)
+        self.artist_list.artist_double_clicked.connect(self.artist_controller.on_artist_double_click)
+        self.artist_list.add_btn.clicked.connect(self.artist_controller.add_artist)
 
-        self.preview = QLabel("Artwork preview")
-        self.preview.setAlignment(Qt.AlignCenter)
-        self.preview.setMinimumHeight(200)
-        self.preview.setStyleSheet("border: 1px solid #999;")
+        self.artwork_table.artwork_selected.connect(self.artwork_controller.on_artwork_selected)
+        self.artwork_table.artwork_double_clicked.connect(self.artwork_controller.edit_artwork)
 
-        self.add_btn = QPushButton("Add")
-        self.edit_btn = QPushButton("Edit")
-        self.delete_btn = QPushButton("Delete")
+        self.add_btn.clicked.connect(self.artwork_controller.add_artwork)
+        self.edit_btn.clicked.connect(self.artwork_controller.edit_artwork)
+        self.delete_btn.clicked.connect(self.artwork_controller.delete_artwork)
 
-        right_panel.addWidget(self.preview)
-        right_panel.addWidget(self.add_btn)
-        right_panel.addWidget(self.edit_btn)
-        right_panel.addWidget(self.delete_btn)
-        right_panel.addStretch()
+    # =========================
+    # DRAG & DROP (WINDOW LEVEL)
+    # =========================
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls() and self.artwork_controller.handle_drop(event.mimeData().urls()):
+            event.acceptProposedAction()
+        else:
+            event.ignore()
 
-        # =========================
-        # LAYOUT ASSEMBLY
-        # =========================
-        main_layout.addWidget(self.artist_list)
-        main_layout.addWidget(self.artwork_table, 1)
-        main_layout.addLayout(right_panel)
+    def dropEvent(self, event):
+        if event.mimeData().hasUrls() and self.artwork_controller.handle_drop(event.mimeData().urls()):
+            event.acceptProposedAction()
+        else:
+            event.ignore()
 
-        central.setLayout(main_layout)
-        self.setCentralWidget(central)
+    def closeEvent(self, event):
+        self.db.close()
+        super().closeEvent(event)

@@ -4,7 +4,7 @@ Custom widget for displaying artwork images
 """
 
 from pathlib import Path
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSizePolicy
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 
@@ -16,6 +16,7 @@ class ImagePreviewWidget(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._pixmap = None
         self._build_ui()
 
     def _build_ui(self):
@@ -24,11 +25,15 @@ class ImagePreviewWidget(QWidget):
         # Image label
         self.image_label = QLabel("No image")
         self.image_label.setAlignment(Qt.AlignCenter)
-        self.image_label.setMinimumHeight(200)
+        self.image_label.setMinimumHeight(0)
         self.image_label.setStyleSheet(
-            "border: 1px solid #999; background-color: #f5f5f5;"
+            "border: 1px solid #555;"
+            "background-color: #1e1e1e;"
+            "color: #ddd;"
         )
         self.image_label.setScaledContents(False)
+        # Ignore the pixmap's size hint so the label stays bounded by layout
+        self.image_label.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
 
         layout.addWidget(self.image_label)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -50,28 +55,26 @@ class ImagePreviewWidget(QWidget):
             self.image_label.setText("Invalid image")
             return
 
-        # Scale pixmap to fit label while maintaining aspect ratio
-        scaled_pixmap = pixmap.scaled(
-            self.image_label.size(),
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation
-        )
-        self.image_label.setPixmap(scaled_pixmap)
+        self._pixmap = pixmap
+        self._update_pixmap()
 
     def clear(self):
         """Clear the image"""
         self.image_label.clear()
         self.image_label.setText("No image")
+        self._pixmap = None
 
     def resizeEvent(self, event):
         """Handle resize events to rescale the image"""
         super().resizeEvent(event)
-        if self.image_label.pixmap() and not self.image_label.pixmap().isNull():
-            # Get the original pixmap and rescale it
-            pixmap = self.image_label.pixmap()
-            scaled_pixmap = pixmap.scaled(
-                self.image_label.size(),
-                Qt.KeepAspectRatio,
-                Qt.SmoothTransformation
-            )
-            self.image_label.setPixmap(scaled_pixmap)
+        self._update_pixmap()
+
+    def _update_pixmap(self):
+        if not self._pixmap:
+            return
+        scaled_pixmap = self._pixmap.scaled(
+            self.image_label.size(),
+            Qt.KeepAspectRatio,
+            Qt.SmoothTransformation
+        )
+        self.image_label.setPixmap(scaled_pixmap)
