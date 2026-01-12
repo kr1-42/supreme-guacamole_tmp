@@ -3,15 +3,15 @@ Artwork Table Widget
 Custom widget for displaying and managing artworks
 """
 
-from PySide6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QTableWidget,
     QTableWidgetItem,
     QHeaderView,
-    QAbstractItemView
+    QAbstractItemView,
 )
-from PySide6.QtCore import Qt, Signal
+from PyQt5.QtCore import Qt, pyqtSignal
 
 
 class ArtworkTableWidget(QWidget):
@@ -19,8 +19,8 @@ class ArtworkTableWidget(QWidget):
     Widget displaying artworks in a table format
     """
 
-    artwork_selected = Signal(int)  # Emits artwork ID when selected
-    artwork_double_clicked = Signal(int)  # Emits artwork ID on double click
+    artwork_selected = pyqtSignal(int)  # Emits artwork ID when selected
+    artwork_double_clicked = pyqtSignal(int)  # Emits artwork ID on double click
 
     def __init__(self, parent=None):
         super().__init__(parent)

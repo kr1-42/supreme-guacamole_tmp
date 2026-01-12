@@ -1,6 +1,6 @@
 from pathlib import Path
 import shutil
-from PySide6.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox
 
 from core.paths import IMG_DIR
 PROJECT_ROOT = Path(__file__).resolve().parents[2]

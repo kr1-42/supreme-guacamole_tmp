@@ -1,13 +1,13 @@
-from PySide6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget,
     QHBoxLayout,
     QVBoxLayout,
+    QPushButton,
 )
 
 from ui.widgets.artist_list import ArtistListWidget
 from ui.widgets.artwork_table import ArtworkTableWidget
 from ui.widgets.image_carousel import ImageCarousel
-from PySide6.QtWidgets import QPushButton
 
 
 def build_main_layout():

@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox
 
 from ui.dialogs.add_artist import AddArtistDialog
 

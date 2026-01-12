@@ -2,14 +2,14 @@
 Add Artist Dialog
 """
 
-from PySide6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QFormLayout,
     QLineEdit,
     QTextEdit,
     QPushButton,
-    QDialogButtonBox
+    QDialogButtonBox,
 )
 
 

@@ -1,11 +1,10 @@
 """
 Simple image carousel widget that wraps ImagePreviewWidget with previous/next controls.
 """
-
 from pathlib import Path
 import shutil
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
-from PySide6.QtCore import Qt
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
+from PyQt5.QtCore import Qt
 
 from core.paths import IMG_DIR
 

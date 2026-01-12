@@ -1,7 +1,7 @@
 from pathlib import Path
 import shutil
 
-from PySide6.QtWidgets import QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QMessageBox
 
 from core.database import Database
 from core.paths import IMG_DIR, DB_PATH, ensure_paths

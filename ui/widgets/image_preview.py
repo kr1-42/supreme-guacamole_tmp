@@ -4,9 +4,9 @@ Custom widget for displaying artwork images
 """
 
 from pathlib import Path
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QSizePolicy
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QSizePolicy
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
 
 
 class ImagePreviewWidget(QWidget):
