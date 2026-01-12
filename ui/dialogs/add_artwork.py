@@ -2,7 +2,7 @@
 Add Artwork Dialog
 """
 
-from PySide6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QFormLayout,
@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QDoubleSpinBox,
     QPushButton,
     QDialogButtonBox,
-    QFileDialog
+    QFileDialog,
 )
 
 

@@ -67,7 +67,7 @@ On first run, the application will create the necessary directories and database
 ## Requirements
 
 - Python 3.8+
-- PySide6 6.5.0+
+- PyQt5 5.15+
 
 ## License
 

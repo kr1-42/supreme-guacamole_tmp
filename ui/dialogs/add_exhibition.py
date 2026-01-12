@@ -2,7 +2,7 @@
 Add Exhibition Dialog
 """
 
-from PySide6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QDialog,
     QVBoxLayout,
     QFormLayout,
@@ -10,9 +10,9 @@ from PySide6.QtWidgets import (
     QTextEdit,
     QDateEdit,
     QPushButton,
-    QDialogButtonBox
+    QDialogButtonBox,
 )
-from PySide6.QtCore import QDate
+from PyQt5.QtCore import QDate
 
 
 class AddExhibitionDialog(QDialog):
@@ -34,15 +34,15 @@ class AddExhibitionDialog(QDialog):
         # Form fields
         self.name_input = QLineEdit()
         self.location_input = QLineEdit()
-        
+
         self.start_date_input = QDateEdit()
         self.start_date_input.setCalendarPopup(True)
         self.start_date_input.setDate(QDate.currentDate())
-        
+
         self.end_date_input = QDateEdit()
         self.end_date_input.setCalendarPopup(True)
         self.end_date_input.setDate(QDate.currentDate().addDays(30))
-        
+
         self.description_input = QTextEdit()
         self.description_input.setMaximumHeight(150)
 
@@ -78,13 +78,13 @@ class AddExhibitionDialog(QDialog):
         """Set form data (for editing)"""
         self.name_input.setText(data.get('name', ''))
         self.location_input.setText(data.get('location', ''))
-        
+
         start_date = data.get('start_date')
         if start_date:
             self.start_date_input.setDate(QDate.fromString(start_date, "yyyy-MM-dd"))
-        
+
         end_date = data.get('end_date')
         if end_date:
             self.end_date_input.setDate(QDate.fromString(end_date, "yyyy-MM-dd"))
-        
+
         self.description_input.setPlainText(data.get('description', ''))

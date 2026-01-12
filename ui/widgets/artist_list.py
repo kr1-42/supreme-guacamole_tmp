@@ -3,24 +3,24 @@ Artist List Widget
 Custom widget for displaying and managing artists
 """
 
-from PySide6.QtWidgets import (
+from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
-    QListWidget,
+    QLabel,
     QLineEdit,
+    QListWidget,
     QPushButton,
-    QLabel
 )
-from PySide6.QtCore import Qt, Signal
+from PyQt5.QtCore import Qt, pyqtSignal
 
 
 class ArtistListWidget(QWidget):
     """
     Widget displaying a searchable list of artists
     """
-    
-    artist_selected = Signal(int)  # Emits artist ID when selected
-    artist_double_clicked = Signal(int)  # Emits artist ID on double click
+
+    artist_selected = pyqtSignal(int)  # Emits artist ID when selected
+    artist_double_clicked = pyqtSignal(int)  # Emits artist ID on double click
 
     def __init__(self, parent=None):
         super().__init__(parent)

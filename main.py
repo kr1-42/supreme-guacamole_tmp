@@ -5,7 +5,7 @@ Main entry point
 
 import sys
 from pathlib import Path
-from PySide6.QtWidgets import QApplication
+from PyQt5.QtWidgets import QMainWindow, QMessageBox, QApplication
 
 from core.database import Database
 from core.schema import SCHEMA_SQL
