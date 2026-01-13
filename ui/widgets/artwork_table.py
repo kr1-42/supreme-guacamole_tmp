@@ -31,9 +31,9 @@ class ArtworkTableWidget(QWidget):
 
         # Table widget
         self.table = QTableWidget()
-        self.table.setColumnCount(7)
+        self.table.setColumnCount(8)
         self.table.setHorizontalHeaderLabels([
-            "Title", "Artist", "Type", "Year", "Price", "Artist %", "Status"
+            "Title", "Artist", "Type", "Year", "Price", "Artist %", "Final Price", "Status"
         ])
 
         # Table settings
@@ -99,9 +99,16 @@ class ArtworkTableWidget(QWidget):
             cut_item = QTableWidgetItem(f"{cut:.2f}%" if cut is not None else '')
             self.table.setItem(row, 5, cut_item)
 
+            # Final Price (price / (artist_cut_percent / 100))
+            final_price = None
+            if price is not None and cut is not None and cut > 0:
+                final_price = (price * cut) / 100
+            final_price_item = QTableWidgetItem(f"€ {final_price:.2f}" if final_price else '')
+            self.table.setItem(row, 6, final_price_item)
+
             # Status
             status_item = QTableWidgetItem(artwork.get('status', 'available'))
-            self.table.setItem(row, 6, status_item)
+            self.table.setItem(row, 7, status_item)
 
         # Resize columns to content
         self.table.resizeColumnsToContents()
