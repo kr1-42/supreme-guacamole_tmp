@@ -3,11 +3,11 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
     QPushButton,
+    QLabel,
 )
 
 from ui.widgets.artist_list import ArtistListWidget
 from ui.widgets.artwork_table import ArtworkTableWidget
-from ui.widgets.image_carousel import ImageCarousel
 
 
 def build_main_layout():
@@ -17,11 +17,12 @@ def build_main_layout():
 
     # Left: artists
     artist_list = ArtistListWidget()
-    artist_list.setFixedWidth(250)
+    artist_list.setFixedWidth(200)
+    artist_list.setMinimumHeight(150)
 
-    # Middle/right: table + preview + actions
+    # Middle/right: full-width artwork table + actions
     artwork_table = ArtworkTableWidget()
-    preview = ImageCarousel()
+    artwork_count = QLabel("Artworks: 0")
 
     add_btn = QPushButton("Add")
     edit_btn = QPushButton("Edit")
@@ -33,9 +34,9 @@ def build_main_layout():
     action_btns.addWidget(delete_btn)
 
     center_panel = QVBoxLayout()
-    center_panel.addWidget(artwork_table, 1)
-    center_panel.addWidget(preview, 3)
+    center_panel.addWidget(artwork_count)
     center_panel.addLayout(action_btns)
+    center_panel.addWidget(artwork_table, 1)
     center_panel.addStretch()
 
     main_layout.addWidget(artist_list)
@@ -46,7 +47,7 @@ def build_main_layout():
     refs = {
         "artist_list": artist_list,
         "artwork_table": artwork_table,
-        "preview": preview,
+        "artwork_count_label": artwork_count,
         "add_btn": add_btn,
         "edit_btn": edit_btn,
         "delete_btn": delete_btn,

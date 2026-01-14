@@ -13,9 +13,10 @@ from ui.main_window import MainWindow
 
 
 # =========================================================
-# PATH AZIENDALI (USO LOCALE macOS)
+# APP PATHS (LOCAL PROJECT DIR)
 # =========================================================
-APP_DIR = Path.home() / "ArtCatalog"
+# Store app data inside the project folder instead of under the home directory.
+APP_DIR = Path(__file__).resolve().parent
 DATA_DIR = APP_DIR / "data"
 IMG_DIR = APP_DIR / "images" / "artworks"
 BACKUP_DIR = APP_DIR / "backups"

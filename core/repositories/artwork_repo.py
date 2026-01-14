@@ -14,6 +14,8 @@ class ArtworkRepository:
     def __init__(self, db: Database):
         self.db = db
         self._ensure_artist_cut_column()
+        self._ensure_quantity_column()
+        self._ensure_code_column()
 
     def _ensure_artist_cut_column(self):
         """Ensure artist_cut_percent column exists for legacy databases."""
@@ -27,6 +29,38 @@ class ArtworkRepository:
             except Exception:
                 # If migration fails we leave DB untouched to avoid data loss
                 pass
+
+    def _ensure_quantity_column(self):
+        """Ensure quantity column exists for legacy databases."""
+        cursor = self.db.execute("PRAGMA table_info(artwork)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if "quantity" not in columns:
+            try:
+                self.db.execute(
+                    "ALTER TABLE artwork ADD COLUMN quantity INTEGER DEFAULT 1"
+                )
+            except Exception:
+                # Leave DB unchanged if migration fails
+                pass
+
+    def _ensure_code_column(self):
+        """Ensure code column and unique index exist for legacy databases."""
+        cursor = self.db.execute("PRAGMA table_info(artwork)")
+        columns = {row[1] for row in cursor.fetchall()}
+        if "code" not in columns:
+            try:
+                self.db.execute(
+                    "ALTER TABLE artwork ADD COLUMN code TEXT"
+                )
+            except Exception:
+                pass
+        # Create unique index if not present (NULL values allowed)
+        try:
+            self.db.execute(
+                "CREATE UNIQUE INDEX IF NOT EXISTS idx_artwork_code ON artwork(code)"
+            )
+        except Exception:
+            pass
 
     def get_all(self):
         """Get all artworks"""
@@ -67,23 +101,23 @@ class ArtworkRepository:
         )
         return cursor.fetchall()
 
-    def create(self, artist_id: int, title: str, description: str = "",
-               type: str = "", year: int = None, price: float = None,
+    def create(self, artist_id: int, code: str, title: str, description: str = "",
+               type: str = "", quantity: int = 1, year: int = None, price: float = None,
                artist_cut_percent: float = 10.0, image: str = "",
                status: str = "available", notes: str = ""):
         """Create new artwork"""
         cursor = self.db.execute(
             """
             INSERT INTO artwork
-            (artist_id, title, description, type, year, price, artist_cut_percent, image, status, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (artist_id, code, title, description, type, quantity, year, price, artist_cut_percent, image, status, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (artist_id, title, description, type, year, price, artist_cut_percent, image, status, notes)
+            (artist_id, code, title, description, type, quantity, year, price, artist_cut_percent, image, status, notes)
         )
         return cursor.lastrowid
 
     def update(self, artwork_id: int, artist_id: int, title: str,
-               description: str = "", type: str = "", year: int = None,
+               code: str = None, description: str = "", type: str = "", quantity: int = 1, year: int = None,
                price: float = None, artist_cut_percent: float = 10.0,
                image: str = "", status: str = "available",
                notes: str = ""):
@@ -91,11 +125,11 @@ class ArtworkRepository:
         self.db.execute(
             """
             UPDATE artwork
-            SET artist_id = ?, title = ?, description = ?, type = ?,
-                year = ?, price = ?, artist_cut_percent = ?, image = ?, status = ?, notes = ?
+            SET artist_id = ?, code = ?, title = ?, description = ?, type = ?,
+                quantity = ?, year = ?, price = ?, artist_cut_percent = ?, image = ?, status = ?, notes = ?
             WHERE id = ?
             """,
-            (artist_id, title, description, type, year, price, artist_cut_percent, image,
+            (artist_id, code, title, description, type, quantity, year, price, artist_cut_percent, image,
              status, notes, artwork_id)
         )
 

@@ -40,6 +40,7 @@ class ArtistListWidget(QWidget):
 
         # List widget
         self.list_widget = QListWidget()
+        self.list_widget.setStyleSheet("QListWidget::item { height: 26px; }")
         self.list_widget.itemSelectionChanged.connect(self._on_selection_changed)
         self.list_widget.itemDoubleClicked.connect(self._on_double_click)
 

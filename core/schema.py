@@ -53,9 +53,11 @@ CREATE TABLE IF NOT EXISTS artwork (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
     artist_id INTEGER,           -- FK verso artist (puo essere NULL)
+    code TEXT UNIQUE,            -- Codice univoco per opera/lotto
     title TEXT NOT NULL,         -- Titolo opera / articolo
     description TEXT,            -- Descrizione estesa
     type TEXT,                   -- painting, sculpture, print, merch, ecc.
+    quantity INTEGER DEFAULT 1,  -- Numero di copie disponibili
     year INTEGER,                -- Anno di produzione
     price REAL,                  -- Prezzo di listino
     artist_cut_percent REAL DEFAULT 10, -- Percentuale riconosciuta all'artista
@@ -173,6 +175,9 @@ CREATE INDEX IF NOT EXISTS idx_artwork_artist
 
 CREATE INDEX IF NOT EXISTS idx_artwork_status
     ON artwork(status);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_artwork_code
+    ON artwork(code);
 
 CREATE INDEX IF NOT EXISTS idx_sale_date
     ON sale(sale_date);

@@ -1,21 +1,21 @@
 from pathlib import Path
 import shutil
+import uuid
 from PyQt5.QtWidgets import QMessageBox
 
 from core.paths import IMG_DIR
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-TEST_IMAGES_DIR = PROJECT_ROOT / "assets" / "test_images"
 from ui.dialogs.add_artwork import AddArtworkDialog
 
 
 class ArtworkController:
-    """Handles artwork CRUD, preview, and drag/drop."""
+    """Handles artwork CRUD and drag/drop."""
 
-    def __init__(self, artwork_repo, artist_repo, artwork_table, preview_widget):
+    def __init__(self, artwork_repo, artist_repo, artwork_table, detail_widget=None, count_label=None):
         self.artwork_repo = artwork_repo
         self.artist_repo = artist_repo
         self.table = artwork_table
-        self.preview = preview_widget
+        self.detail = detail_widget
+        self.count_label = count_label
 
     def load_artworks(self, artist_id=None):
         rows = self.artwork_repo.get_by_artist(artist_id) if artist_id else self.artwork_repo.get_all()
@@ -25,32 +25,34 @@ class ArtworkController:
             data["artist_name"] = r["artist_name"] if "artist_name" in r.keys() else ""
             artworks.append(data)
         self.table.load_artworks(artworks)
-        self.preview.clear()
+        if self.detail:
+            self.detail.clear()
+        if self.count_label:
+            self.count_label.setText(f"Artworks: {len(artworks)}")
 
     def on_artwork_selected(self, artwork_id: int):
         record = self.artwork_repo.get_by_id(artwork_id)
         if not record:
-            self.preview.clear()
+            if self.detail:
+                self.detail.clear()
             return
-        image_name = record["image"] if "image" in record.keys() else ""
-        images = []
-        if image_name:
-            images.append(IMG_DIR / image_name)
-        if not images:
-            images = sorted(TEST_IMAGES_DIR.glob("test_image_*.ppm"))
-        self.preview.set_images(images)
+        if self.detail:
+            self.detail.show_artwork(dict(record))
 
     def add_artwork(self):
         artists = [dict(r) for r in self.artist_repo.get_all()]
         dialog = AddArtworkDialog(artists=artists, parent=self.table)
         if dialog.exec():
             data = dialog.get_data()
+            code = self._clean_code(data.get("code")) or self._generate_code()
             image_name = self._persist_image(data.get("image"))
             self.artwork_repo.create(
                 artist_id=data.get("artist_id"),
+                code=code,
                 title=data.get("title"),
                 description=data.get("description", ""),
                 type=data.get("type", ""),
+                quantity=data.get("quantity", 1),
                 year=data.get("year"),
                 price=data.get("price"),
                 artist_cut_percent=data.get("artist_cut_percent", 10.0),
@@ -79,13 +81,16 @@ class ArtworkController:
 
         if dialog.exec():
             new_data = dialog.get_data()
+            new_code = self._clean_code(new_data.get("code")) or data.get("code") or self._generate_code()
             image_name = self._persist_image(new_data.get("image")) if new_data.get("image") else data.get("image", "")
             self.artwork_repo.update(
                 artwork_id=artwork_id,
                 artist_id=new_data.get("artist_id"),
+                code=new_code,
                 title=new_data.get("title"),
                 description=new_data.get("description", ""),
                 type=new_data.get("type", ""),
+                quantity=new_data.get("quantity", data.get("quantity", 1)),
                 year=new_data.get("year"),
                 price=new_data.get("price"),
                 artist_cut_percent=new_data.get("artist_cut_percent", data.get("artist_cut_percent", 10.0)),
@@ -111,7 +116,8 @@ class ArtworkController:
         if confirm == QMessageBox.Yes:
             self.artwork_repo.delete(artwork_id)
             self.load_artworks()
-            self.preview.clear()
+            if self.detail:
+                self.detail.clear()
 
     # ---------- Drag & drop helpers ----------
     def handle_drop(self, urls):
@@ -131,12 +137,15 @@ class ArtworkController:
         dialog.set_data({'image': str(IMG_DIR / image_name)})
         if dialog.exec():
             data = dialog.get_data()
+            code = self._clean_code(data.get("code")) or self._generate_code()
             final_image_name = self._persist_image(data.get("image")) if data.get("image") else image_name
             self.artwork_repo.create(
                 artist_id=data.get("artist_id"),
+                code=code,
                 title=data.get("title"),
                 description=data.get("description", ""),
                 type=data.get("type", ""),
+                quantity=data.get("quantity", 1),
                 year=data.get("year"),
                 price=data.get("price"),
                 artist_cut_percent=data.get("artist_cut_percent", 10.0),
@@ -163,3 +172,13 @@ class ArtworkController:
 
     def _is_image_file(self, path_str: str):
         return Path(path_str).suffix.lower() in {".png", ".jpg", ".jpeg", ".bmp", ".gif", ".ppm"}
+
+    def _generate_code(self) -> str:
+        """Generate a short unique code for artworks."""
+        return f"ART-{uuid.uuid4().hex[:8].upper()}"
+
+    def _clean_code(self, value):
+        if value is None:
+            return None
+        value = str(value).strip()
+        return value or None

@@ -42,7 +42,7 @@ class MainWindow(QMainWindow):
 
         self.artist_list = refs["artist_list"]
         self.artwork_table = refs["artwork_table"]
-        self.preview = refs["preview"]
+        self.artwork_count_label = refs["artwork_count_label"]
         self.add_btn = refs["add_btn"]
         self.edit_btn = refs["edit_btn"]
         self.delete_btn = refs["delete_btn"]
@@ -52,7 +52,8 @@ class MainWindow(QMainWindow):
             self.artwork_repo,
             self.artist_repo,
             self.artwork_table,
-            self.preview,
+            None,
+            self.artwork_count_label,
         )
         self.artist_controller = ArtistController(
             self.artist_repo,

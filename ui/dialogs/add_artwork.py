@@ -39,11 +39,18 @@ class AddArtworkDialog(QDialog):
         for artist in self.artists:
             self.artist_combo.addItem(artist['name'], artist['id'])
 
+        self.code_input = QLineEdit()
+        self.code_input.setPlaceholderText("Unique code (e.g., EXH-001)")
+
         self.title_input = QLineEdit()
         self.description_input = QTextEdit()
         self.description_input.setMaximumHeight(100)
 
         self.type_input = QLineEdit()
+
+        self.quantity_input = QSpinBox()
+        self.quantity_input.setRange(1, 100000)
+        self.quantity_input.setValue(1)
 
         self.year_input = QSpinBox()
         self.year_input.setRange(1000, 2100)
@@ -76,9 +83,11 @@ class AddArtworkDialog(QDialog):
         image_layout.addWidget(image_btn)
 
         form.addRow("Artist:", self.artist_combo)
+        form.addRow("Code:", self.code_input)
         form.addRow("Title:", self.title_input)
         form.addRow("Description:", self.description_input)
         form.addRow("Type:", self.type_input)
+        form.addRow("Quantity:", self.quantity_input)
         form.addRow("Year:", self.year_input)
         form.addRow("Price:", self.price_input)
         form.addRow("Artist cut %:", self.artist_cut_input)
@@ -113,9 +122,11 @@ class AddArtworkDialog(QDialog):
         """Get form data"""
         return {
             'artist_id': self.artist_combo.currentData(),
+            'code': self.code_input.text().strip(),
             'title': self.title_input.text(),
             'description': self.description_input.toPlainText(),
             'type': self.type_input.text(),
+            'quantity': self.quantity_input.value(),
             'year': self.year_input.value(),
             'price': self.price_input.value(),
             'artist_cut_percent': self.artist_cut_input.value(),
@@ -133,9 +144,15 @@ class AddArtworkDialog(QDialog):
                 self.artist_combo.setCurrentIndex(i)
                 break
 
+        self.code_input.setText(data.get('code', ''))
+
         self.title_input.setText(data.get('title', ''))
         self.description_input.setPlainText(data.get('description', ''))
         self.type_input.setText(data.get('type', ''))
+
+        quantity = data.get('quantity')
+        if quantity:
+            self.quantity_input.setValue(int(quantity))
 
         year = data.get('year')
         if year:

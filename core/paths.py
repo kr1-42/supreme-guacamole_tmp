@@ -6,9 +6,10 @@ from pathlib import Path
 
 
 # =========================================================
-# APPLICATION PATHS
+# APPLICATION PATHS (LOCAL PROJECT DIR)
 # =========================================================
-APP_DIR = Path.home() / "ArtCatalog"
+# Anchor to the project directory so data lives alongside the codebase.
+APP_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = APP_DIR / "data"
 IMG_DIR = APP_DIR / "images" / "artworks"
 BACKUP_DIR = APP_DIR / "backups"
