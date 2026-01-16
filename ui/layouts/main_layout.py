@@ -24,9 +24,9 @@ def build_main_layout():
     artwork_table = ArtworkTableWidget()
     artwork_count = QLabel("Artworks: 0")
 
-    add_btn = QPushButton("Add")
-    edit_btn = QPushButton("Edit")
-    delete_btn = QPushButton("Delete")
+    add_btn = QPushButton("aggiungi opera")
+    edit_btn = QPushButton("Modifica")
+    delete_btn = QPushButton("Elimina")
 
     action_btns = QHBoxLayout()
     action_btns.addWidget(add_btn)

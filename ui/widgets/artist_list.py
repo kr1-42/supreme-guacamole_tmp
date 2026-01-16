@@ -30,22 +30,22 @@ class ArtistListWidget(QWidget):
         layout = QVBoxLayout()
 
         # Title
-        title = QLabel("Artists")
+        title = QLabel("Artisti")
         title.setStyleSheet("font-weight: bold; font-size: 14px;")
 
         # Search box
         self.search_input = QLineEdit()
-        self.search_input.setPlaceholderText("Search artists...")
+        self.search_input.setPlaceholderText("Cerca artisti...")
         self.search_input.textChanged.connect(self._on_search)
 
         # List widget
         self.list_widget = QListWidget()
-        self.list_widget.setStyleSheet("QListWidget::item { height: 26px; }")
+        self.list_widget.setStyleSheet("QListWidget::item { height: 34px; }")
         self.list_widget.itemSelectionChanged.connect(self._on_selection_changed)
         self.list_widget.itemDoubleClicked.connect(self._on_double_click)
 
         # Add button
-        self.add_btn = QPushButton("+ Add Artist")
+        self.add_btn = QPushButton("+ Aggiungi Artista")
 
         layout.addWidget(title)
         layout.addWidget(self.search_input)
