@@ -46,6 +46,7 @@ class ArtworkDetailWidget(QWidget):
         divider = QFrame()
         divider.setFrameShape(QFrame.HLine)
         divider.setFrameShadow(QFrame.Sunken)
+        divider.setStyleSheet("color: #888888;")
         layout.addWidget(divider)
 
         layout.addWidget(QLabel("Description:"))

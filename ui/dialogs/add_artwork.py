@@ -78,6 +78,7 @@ class AddArtworkDialog(QDialog):
         self.image_input = QLineEdit()
         self.image_input.setPlaceholderText("No image selected")
         image_btn = QPushButton("Browse...")
+        image_btn.setMinimumHeight(35)
         image_btn.clicked.connect(self._browse_image)
         image_layout.addWidget(self.image_input)
         image_layout.addWidget(image_btn)
@@ -101,6 +102,11 @@ class AddArtworkDialog(QDialog):
         )
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
+        
+        # Make buttons larger
+        for btn in buttons.buttons():
+            btn.setMinimumHeight(35)
+            btn.setMinimumWidth(80)
 
         layout.addLayout(form)
         layout.addWidget(buttons)

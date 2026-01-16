@@ -50,6 +50,11 @@ class AddArtistDialog(QDialog):
         )
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
+        
+        # Make buttons larger
+        for btn in buttons.buttons():
+            btn.setMinimumHeight(35)
+            btn.setMinimumWidth(80)
 
         layout.addLayout(form)
         layout.addWidget(buttons)

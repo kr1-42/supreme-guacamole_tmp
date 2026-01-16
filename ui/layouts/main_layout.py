@@ -27,6 +27,11 @@ def build_main_layout():
     add_btn = QPushButton("aggiungi opera")
     edit_btn = QPushButton("Modifica")
     delete_btn = QPushButton("Elimina")
+    
+    # Make buttons larger
+    for btn in [add_btn, edit_btn, delete_btn]:
+        btn.setMinimumHeight(40)
+        btn.setMinimumWidth(100)
 
     action_btns = QHBoxLayout()
     action_btns.addWidget(add_btn)

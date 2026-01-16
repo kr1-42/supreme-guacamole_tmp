@@ -40,12 +40,13 @@ class ArtistListWidget(QWidget):
 
         # List widget
         self.list_widget = QListWidget()
-        self.list_widget.setStyleSheet("QListWidget::item { height: 34px; }")
+        self.list_widget.setStyleSheet("QListWidget::item { height: 50px; }")
         self.list_widget.itemSelectionChanged.connect(self._on_selection_changed)
         self.list_widget.itemDoubleClicked.connect(self._on_double_click)
 
         # Add button
         self.add_btn = QPushButton("+ Aggiungi Artista")
+        self.add_btn.setMinimumHeight(40)
 
         layout.addWidget(title)
         layout.addWidget(self.search_input)
