@@ -17,7 +17,7 @@ def build_main_layout():
 
     # Left: artists
     artist_list = ArtistListWidget()
-    artist_list.setFixedWidth(200)
+    artist_list.setFixedWidth(250)
     artist_list.setMinimumHeight(150)
 
     # Middle/right: full-width artwork table + actions

@@ -82,7 +82,21 @@ class ArtworkController:
         if dialog.exec():
             new_data = dialog.get_data()
             new_code = self._clean_code(new_data.get("code")) or data.get("code") or self._generate_code()
-            image_name = self._persist_image(new_data.get("image")) if new_data.get("image") else data.get("image", "")
+            
+            # Handle image: check if it's a new image or the existing one
+            new_image_path = new_data.get("image", "")
+            original_image = data.get("image", "")
+            
+            if new_image_path:
+                # Check if it's the same as the original (just filename)
+                if new_image_path == original_image:
+                    image_name = original_image
+                else:
+                    # Try to persist as a new image
+                    persisted = self._persist_image(new_image_path)
+                    image_name = persisted if persisted else original_image
+            else:
+                image_name = original_image
             
             old_status = data.get("status", "available")
             new_status = new_data.get("status", "available")
