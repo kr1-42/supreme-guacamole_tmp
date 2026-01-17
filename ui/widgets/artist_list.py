@@ -31,7 +31,7 @@ class ArtistListWidget(QWidget):
 
         # Title
         title = QLabel("Artisti")
-        title.setStyleSheet("font-weight: bold; font-size: 14px;")
+        title.setStyleSheet("font-weight: bold; font-size: 16px;")
 
         # Search box
         self.search_input = QLineEdit()
@@ -40,7 +40,7 @@ class ArtistListWidget(QWidget):
 
         # List widget
         self.list_widget = QListWidget()
-        self.list_widget.setStyleSheet("QListWidget::item { height: 50px; }")
+        self.list_widget.setStyleSheet("QListWidget::item { height: 50px; font-size: 12px; }")
         self.list_widget.itemSelectionChanged.connect(self._on_selection_changed)
         self.list_widget.itemDoubleClicked.connect(self._on_double_click)
 

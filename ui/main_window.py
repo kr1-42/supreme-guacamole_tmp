@@ -26,6 +26,11 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Art Catalog Manager")
         self.resize(1200, 700)
         self.setAcceptDrops(True)
+        
+        # Set application-wide font size
+        font = self.font()
+        font.setPointSize(11)
+        self.setFont(font)
 
         ensure_paths()
         self.db = Database(DB_PATH)

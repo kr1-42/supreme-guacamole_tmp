@@ -83,21 +83,65 @@ class ArtworkController:
             new_data = dialog.get_data()
             new_code = self._clean_code(new_data.get("code")) or data.get("code") or self._generate_code()
             image_name = self._persist_image(new_data.get("image")) if new_data.get("image") else data.get("image", "")
-            self.artwork_repo.update(
-                artwork_id=artwork_id,
-                artist_id=new_data.get("artist_id"),
-                code=new_code,
-                title=new_data.get("title"),
-                description=new_data.get("description", ""),
-                type=new_data.get("type", ""),
-                quantity=new_data.get("quantity", data.get("quantity", 1)),
-                year=new_data.get("year"),
-                price=new_data.get("price"),
-                artist_cut_percent=new_data.get("artist_cut_percent", data.get("artist_cut_percent", 10.0)),
-                image=image_name or "",
-                status=new_data.get("status", "available"),
-                notes=new_data.get("notes", "")
-            )
+            
+            old_status = data.get("status", "available")
+            new_status = new_data.get("status", "available")
+            old_quantity = data.get("quantity", 1)
+            
+            # If marking as sold and quantity > 1, create a sold copy and decrement original
+            if new_status == "sold" and old_status != "sold" and old_quantity > 1:
+                # Use the original image name directly for the sold copy
+                original_image = data.get("image", "")
+                
+                # Create a sold copy with quantity 1
+                self.artwork_repo.create(
+                    artist_id=new_data.get("artist_id"),
+                    code=self._generate_code(),  # Generate new code for sold item
+                    title=new_data.get("title"),
+                    description=new_data.get("description", ""),
+                    type=new_data.get("type", ""),
+                    quantity=1,
+                    year=new_data.get("year"),
+                    price=new_data.get("price"),
+                    artist_cut_percent=new_data.get("artist_cut_percent", data.get("artist_cut_percent", 10.0)),
+                    image=original_image,
+                    status="sold",
+                    notes=new_data.get("notes", "")
+                )
+                
+                # Update original: keep status as available, decrement quantity
+                self.artwork_repo.update(
+                    artwork_id=artwork_id,
+                    artist_id=new_data.get("artist_id"),
+                    code=new_code,
+                    title=new_data.get("title"),
+                    description=new_data.get("description", ""),
+                    type=new_data.get("type", ""),
+                    quantity=old_quantity - 1,
+                    year=new_data.get("year"),
+                    price=new_data.get("price"),
+                    artist_cut_percent=new_data.get("artist_cut_percent", data.get("artist_cut_percent", 10.0)),
+                    image=original_image,
+                    status=old_status,  # Keep original status
+                    notes=new_data.get("notes", "")
+                )
+            else:
+                # Normal update
+                self.artwork_repo.update(
+                    artwork_id=artwork_id,
+                    artist_id=new_data.get("artist_id"),
+                    code=new_code,
+                    title=new_data.get("title"),
+                    description=new_data.get("description", ""),
+                    type=new_data.get("type", ""),
+                    quantity=new_data.get("quantity", data.get("quantity", 1)),
+                    year=new_data.get("year"),
+                    price=new_data.get("price"),
+                    artist_cut_percent=new_data.get("artist_cut_percent", data.get("artist_cut_percent", 10.0)),
+                    image=image_name or "",
+                    status=new_data.get("status", "available"),
+                    notes=new_data.get("notes", "")
+                )
             self.load_artworks()
 
     def delete_artwork(self):
