@@ -1,3 +1,7 @@
 PyQt5==5.15.10
 PyQt5-sip==12.13.0
 Pillow>=9.0.0
+
+# Web interface for database
+datasette>=0.64.0
+qrcode[pil]>=7.4.0

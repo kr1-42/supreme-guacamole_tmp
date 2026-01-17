@@ -7,6 +7,7 @@ from core.database import Database
 from core.paths import IMG_DIR, DB_PATH, ensure_paths
 from core.repositories.artist_repo import ArtistRepository
 from core.repositories.artwork_repo import ArtworkRepository
+from core.repositories.sale_repo import SaleRepository
 from ui.controllers.artist_controller import ArtistController
 from ui.controllers.artwork_controller import ArtworkController
 from ui.layouts.main_layout import build_main_layout
@@ -36,6 +37,7 @@ class MainWindow(QMainWindow):
         self.db = Database(DB_PATH)
         self.artist_repo = ArtistRepository(self.db)
         self.artwork_repo = ArtworkRepository(self.db)
+        self.sale_repo = SaleRepository(self.db)
 
         self._build_ui()
         self.artist_controller.load_artists()
@@ -51,6 +53,7 @@ class MainWindow(QMainWindow):
         self.add_btn = refs["add_btn"]
         self.edit_btn = refs["edit_btn"]
         self.delete_btn = refs["delete_btn"]
+        self.sell_btn = refs["sell_btn"]
 
         # Controllers
         self.artwork_controller = ArtworkController(
@@ -59,6 +62,7 @@ class MainWindow(QMainWindow):
             self.artwork_table,
             None,
             self.artwork_count_label,
+            self.sale_repo,
         )
         self.artist_controller = ArtistController(
             self.artist_repo,
@@ -77,6 +81,7 @@ class MainWindow(QMainWindow):
         self.add_btn.clicked.connect(self.artwork_controller.add_artwork)
         self.edit_btn.clicked.connect(self.artwork_controller.edit_artwork)
         self.delete_btn.clicked.connect(self.artwork_controller.delete_artwork)
+        self.sell_btn.clicked.connect(self.artwork_controller.sell_artwork)
 
     # =========================
     # DRAG & DROP (WINDOW LEVEL)

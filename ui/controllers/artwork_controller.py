@@ -5,14 +5,16 @@ from PyQt5.QtWidgets import QMessageBox
 
 from core.paths import IMG_DIR
 from ui.dialogs.add_artwork import AddArtworkDialog
+from ui.dialogs.sell_artwork import SellArtworkDialog
 
 
 class ArtworkController:
     """Handles artwork CRUD and drag/drop."""
 
-    def __init__(self, artwork_repo, artist_repo, artwork_table, detail_widget=None, count_label=None):
+    def __init__(self, artwork_repo, artist_repo, artwork_table, detail_widget=None, count_label=None, sale_repo=None):
         self.artwork_repo = artwork_repo
         self.artist_repo = artist_repo
+        self.sale_repo = sale_repo
         self.table = artwork_table
         self.detail = detail_widget
         self.count_label = count_label
@@ -176,6 +178,100 @@ class ArtworkController:
             self.load_artworks()
             if self.detail:
                 self.detail.clear()
+
+    def sell_artwork(self):
+        """Open sell dialog for selected artwork."""
+        artwork_id = self.table.get_selected_artwork_id()
+        if not artwork_id:
+            QMessageBox.information(self.table, "Vendi Opera", "Seleziona un'opera prima.")
+            return
+
+        record = self.artwork_repo.get_by_id(artwork_id)
+        if not record:
+            QMessageBox.warning(self.table, "Vendi Opera", "Opera non trovata.")
+            return
+
+        data = dict(record)
+        
+        # Check if already sold
+        if data.get("status") == "sold":
+            QMessageBox.warning(self.table, "Vendi Opera", "Questa opera è già stata venduta.")
+            return
+        
+        # Check availability
+        if data.get("quantity", 0) < 1:
+            QMessageBox.warning(self.table, "Vendi Opera", "Nessuna copia disponibile.")
+            return
+
+        dialog = SellArtworkDialog(data, parent=self.table)
+        if dialog.exec():
+            sale_data = dialog.get_data()
+            
+            # Create sale record
+            if self.sale_repo:
+                sale_id = self.sale_repo.create(
+                    artwork_id=sale_data["artwork_id"],
+                    sale_date=sale_data["sale_date"],
+                    sale_price=sale_data["sale_price"],
+                    buyer_name=sale_data["buyer_name"],
+                    payment_method=sale_data["payment_method"],
+                    notes=sale_data["notes"],
+                )
+                
+                # Add artist payment record if there's an artist
+                if data.get("artist_id") and sale_id:
+                    artist_cut = data.get("artist_cut_percent", 0) or 0
+                    artist_amount = sale_data["sale_price"] * (artist_cut / 100)
+                    self.sale_repo.add_artist_payment(
+                        sale_id=sale_id,
+                        artist_id=data["artist_id"],
+                        percentage=artist_cut,
+                        amount=artist_amount,
+                    )
+            
+            # Update artwork: decrement quantity or mark as sold
+            quantity = data.get("quantity", 1)
+            if quantity > 1:
+                self.artwork_repo.update(
+                    artwork_id=artwork_id,
+                    artist_id=data.get("artist_id"),
+                    code=data.get("code"),
+                    title=data.get("title"),
+                    description=data.get("description", ""),
+                    type=data.get("type", ""),
+                    quantity=quantity - 1,
+                    year=data.get("year"),
+                    price=data.get("price"),
+                    artist_cut_percent=data.get("artist_cut_percent", 10.0),
+                    image=data.get("image", ""),
+                    status=data.get("status", "available"),
+                    notes=data.get("notes", ""),
+                )
+            else:
+                # Last copy - mark as sold
+                self.artwork_repo.update(
+                    artwork_id=artwork_id,
+                    artist_id=data.get("artist_id"),
+                    code=data.get("code"),
+                    title=data.get("title"),
+                    description=data.get("description", ""),
+                    type=data.get("type", ""),
+                    quantity=0,
+                    year=data.get("year"),
+                    price=data.get("price"),
+                    artist_cut_percent=data.get("artist_cut_percent", 10.0),
+                    image=data.get("image", ""),
+                    status="sold",
+                    notes=data.get("notes", ""),
+                )
+            
+            self.load_artworks()
+            QMessageBox.information(
+                self.table, 
+                "Vendita Completata", 
+                f"Opera venduta a {sale_data['buyer_name'] or 'acquirente'}\n"
+                f"Prezzo: € {sale_data['sale_price']:.2f}"
+            )
 
     # ---------- Drag & drop helpers ----------
     def handle_drop(self, urls):
