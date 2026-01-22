@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+    <h1>Welcome to Art Catalog Web</h1>
+    <p>Manage your artists, artworks, exhibitions, and sales in the browser.</p>
+</section>
+
+<section class="stats-grid">
+    <div class="card">
+        <div class="card-title">Artists</div>
+        <div class="card-value">{{ artist_count }}</div>
+    </div>
+    <div class="card">
+        <div class="card-title">Artworks</div>
+        <div class="card-value">{{ artwork_count }}</div>
+    </div>
+    <div class="card">
+        <div class="card-title">Exhibitions</div>
+        <div class="card-value">{{ exhibition_count }}</div>
+    </div>
+    <div class="card">
+        <div class="card-title">Sales</div>
+        <div class="card-value">{{ sale_count }}</div>
+    </div>
+</section>
+{% endblock %}

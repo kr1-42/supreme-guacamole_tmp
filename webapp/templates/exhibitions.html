@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Exhibitions</h1>
+
+<section class="card form-card">
+    <h2>Add Exhibition</h2>
+    <form method="post" class="grid-form">
+        <label>
+            Name
+            <input type="text" name="name" required>
+        </label>
+        <label>
+            Location
+            <input type="text" name="location">
+        </label>
+        <label>
+            Start Date
+            <input type="date" name="start_date">
+        </label>
+        <label>
+            End Date
+            <input type="date" name="end_date">
+        </label>
+        <label class="full">
+            Description
+            <textarea name="description" rows="3"></textarea>
+        </label>
+        <button type="submit">Create Exhibition</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Exhibition List</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Dates</th>
+                    <th>Location</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exhibition in exhibitions %}
+                    <tr>
+                        <td>{{ exhibition["name"] }}</td>
+                        <td>{{ exhibition["start_date"] or '-' }} - {{ exhibition["end_date"] or '-' }}</td>
+                        <td>{{ exhibition["location"] or '-' }}</td>
+                        <td>
+                            <a class="link" href="{{ url_for('exhibition_detail', exhibition_id=exhibition['id']) }}">View</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="muted">No exhibitions yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

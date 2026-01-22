@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ exhibition["name"] }}</h1>
+
+<section class="card form-card">
+    <h2>Edit Exhibition</h2>
+    <form method="post" class="grid-form">
+        <label>
+            Name
+            <input type="text" name="name" value="{{ exhibition['name'] }}" required>
+        </label>
+        <label>
+            Location
+            <input type="text" name="location" value="{{ exhibition['location'] or '' }}">
+        </label>
+        <label>
+            Start Date
+            <input type="date" name="start_date" value="{{ exhibition['start_date'] or '' }}">
+        </label>
+        <label>
+            End Date
+            <input type="date" name="end_date" value="{{ exhibition['end_date'] or '' }}">
+        </label>
+        <label class="full">
+            Description
+            <textarea name="description" rows="3">{{ exhibition['description'] or '' }}</textarea>
+        </label>
+        <div class="actions">
+            <button type="submit">Save Changes</button>
+        </div>
+    </form>
+    <form method="post" action="{{ url_for('exhibition_delete', exhibition_id=exhibition['id']) }}" onsubmit="return confirm('Delete this exhibition?');" class="inline-form">
+        <button type="submit" class="danger">Delete</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Add Artwork</h2>
+    <form method="post" action="{{ url_for('exhibition_add_artwork', exhibition_id=exhibition['id']) }}" class="inline-form">
+        <select name="artwork_id">
+            <option value="">Select artwork</option>
+            {% for artwork in artworks %}
+                <option value="{{ artwork['id'] }}">{{ artwork['title'] }}{% if artwork['artist_name'] %} — {{ artwork['artist_name'] }}{% endif %}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Add</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Artworks in Exhibition</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Artist</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for artwork in exhibition_artworks %}
+                    <tr>
+                        <td>{{ artwork["title"] }}</td>
+                        <td>{{ artwork["artist_name"] or '-' }}</td>
+                        <td>
+                            <form method="post" action="{{ url_for('exhibition_remove_artwork', exhibition_id=exhibition['id'], artwork_id=artwork['id']) }}" class="inline-form">
+                                <button type="submit" class="danger">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="muted">No artworks in this exhibition.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

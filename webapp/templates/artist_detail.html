@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>{{ artist["name"] }}</h1>
+
+<section class="card form-card">
+    <h2>Edit Artist</h2>
+    <form method="post" class="grid-form">
+        <label>
+            Name
+            <input type="text" name="name" value="{{ artist['name'] }}" required>
+        </label>
+        <label>
+            Email
+            <input type="email" name="email" value="{{ artist['email'] or '' }}">
+        </label>
+        <label>
+            Phone
+            <input type="text" name="phone" value="{{ artist['phone'] or '' }}">
+        </label>
+        <label class="full">
+            Bio
+            <textarea name="bio" rows="3">{{ artist['bio'] or '' }}</textarea>
+        </label>
+        <label class="full">
+            Notes
+            <textarea name="notes" rows="3">{{ artist['notes'] or '' }}</textarea>
+        </label>
+        <div class="actions">
+            <button type="submit">Save Changes</button>
+        </div>
+    </form>
+    <form method="post" action="{{ url_for('artist_delete', artist_id=artist['id']) }}" onsubmit="return confirm('Delete this artist?');" class="inline-form">
+        <button type="submit" class="danger">Delete</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Artworks</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for artwork in artworks %}
+                    <tr>
+                        <td>{{ artwork["title"] }}</td>
+                        <td>{{ artwork["status"] }}</td>
+                        <td>{{ artwork["price"] or "-" }}</td>
+                        <td>
+                            <a class="link" href="{{ url_for('artwork_detail', artwork_id=artwork['id']) }}">View</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="muted">No artworks for this artist.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
