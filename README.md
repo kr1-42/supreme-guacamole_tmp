@@ -62,6 +62,23 @@ source venv/bin/activate  # If not already activated
 python main.py
 ```
 
+## Web App
+
+You can run a web version of the catalog using Flask.
+
+1. Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+2. Start the web server:
+```bash
+python webapp/app.py
+```
+
+3. Open your browser:
+- http://localhost:5000
+
 On first run, the application will create the necessary directories and database:
 - `data/` - Database storage
 - `images/artworks/` - Artwork images

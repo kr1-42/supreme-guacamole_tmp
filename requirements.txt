@@ -5,3 +5,4 @@ Pillow>=9.0.0
 # Web interface for database
 datasette>=0.64.0
 qrcode[pil]>=7.4.0
+Flask>=2.3.0

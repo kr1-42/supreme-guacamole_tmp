@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Sale #{{ sale["id"] }}</h1>
+
+<section class="card form-card">
+    <h2>Edit Sale</h2>
+    <form method="post" class="grid-form">
+        <label>
+            Artwork
+            <select name="artwork_id" required>
+                {% for artwork in artworks %}
+                    <option value="{{ artwork['id'] }}" {% if sale['artwork_id'] == artwork['id'] %}selected{% endif %}>
+                        {{ artwork['title'] }}{% if artwork['artist_name'] %} — {{ artwork['artist_name'] }}{% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Sale Date
+            <input type="datetime-local" name="sale_date" value="{{ (sale['sale_date'] or '')|replace(' ', 'T') }}" required>
+        </label>
+        <label>
+            Sale Price
+            <input type="number" name="sale_price" step="0.01" value="{{ sale['sale_price'] }}" required>
+        </label>
+        <label>
+            Buyer Name
+            <input type="text" name="buyer_name" value="{{ sale['buyer_name'] or '' }}">
+        </label>
+        <label>
+            Payment Method
+            <input type="text" name="payment_method" value="{{ sale['payment_method'] or '' }}">
+        </label>
+        <label class="full">
+            Notes
+            <textarea name="notes" rows="3">{{ sale['notes'] or '' }}</textarea>
+        </label>
+        <div class="actions">
+            <button type="submit">Save Changes</button>
+        </div>
+    </form>
+    <form method="post" action="{{ url_for('sale_delete', sale_id=sale['id']) }}" onsubmit="return confirm('Delete this sale?');" class="inline-form">
+        <button type="submit" class="danger">Delete</button>
+    </form>
+</section>
+{% endblock %}

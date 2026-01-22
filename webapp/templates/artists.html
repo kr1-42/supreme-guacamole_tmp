@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Artists</h1>
+
+<section class="card form-card">
+    <h2>Add Artist</h2>
+    <form method="post" class="grid-form">
+        <label>
+            Name
+            <input type="text" name="name" required>
+        </label>
+        <label>
+            Email
+            <input type="email" name="email">
+        </label>
+        <label>
+            Phone
+            <input type="text" name="phone">
+        </label>
+        <label class="full">
+            Bio
+            <textarea name="bio" rows="3"></textarea>
+        </label>
+        <label class="full">
+            Notes
+            <textarea name="notes" rows="3"></textarea>
+        </label>
+        <button type="submit">Create Artist</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Artist List</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for artist in artists %}
+                    <tr>
+                        <td>{{ artist["name"] }}</td>
+                        <td>{{ artist["email"] }}</td>
+                        <td>{{ artist["phone"] }}</td>
+                        <td>
+                            <a class="link" href="{{ url_for('artist_detail', artist_id=artist['id']) }}">View</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="muted">No artists yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

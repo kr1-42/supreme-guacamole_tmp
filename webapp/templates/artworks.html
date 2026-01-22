@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Artworks</h1>
+
+<section class="card form-card">
+    <h2>Add Artwork</h2>
+    <form method="post" class="grid-form">
+        <label>
+            Title
+            <input type="text" name="title" required>
+        </label>
+        <label>
+            Artist
+            <select name="artist_id">
+                <option value="">Unassigned</option>
+                {% for artist in artists %}
+                    <option value="{{ artist['id'] }}">{{ artist['name'] }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Code
+            <input type="text" name="code">
+        </label>
+        <label>
+            Type
+            <input type="text" name="type">
+        </label>
+        <label>
+            Quantity
+            <input type="number" name="quantity" min="1" value="1">
+        </label>
+        <label>
+            Year
+            <input type="number" name="year">
+        </label>
+        <label>
+            Price
+            <input type="number" name="price" step="0.01">
+        </label>
+        <label>
+            Artist Cut %
+            <input type="number" name="artist_cut_percent" step="0.1" value="10">
+        </label>
+        <label>
+            Status
+            <select name="status">
+                {% for status in status_options %}
+                    <option value="{{ status }}">{{ status }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Image Filename
+            <input type="text" name="image" placeholder="example.jpg">
+        </label>
+        <label class="full">
+            Description
+            <textarea name="description" rows="3"></textarea>
+        </label>
+        <label class="full">
+            Notes
+            <textarea name="notes" rows="3"></textarea>
+        </label>
+        <button type="submit">Create Artwork</button>
+    </form>
+</section>
+
+<section class="card">
+    <h2>Artwork List</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Artist</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for artwork in artworks %}
+                    <tr>
+                        <td>{{ artwork["title"] }}</td>
+                        <td>{{ artwork["artist_name"] or "-" }}</td>
+                        <td>{{ artwork["status"] }}</td>
+                        <td>{{ artwork["price"] or "-" }}</td>
+                        <td>
+                            <a class="link" href="{{ url_for('artwork_detail', artwork_id=artwork['id']) }}">View</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="muted">No artworks yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
