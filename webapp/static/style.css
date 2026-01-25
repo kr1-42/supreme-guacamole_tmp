@@ -48,6 +48,10 @@ body {
     color: var(--text);
     text-decoration: none;
     font-weight: 500;
+    display: inline-block;
+    padding: 6px 10px;
+    border: 1px solid var(--border);
+    background: var(--card);
 }
 
 .nav a:hover {
@@ -67,7 +71,7 @@ body {
 .card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 0;
     padding: 16px;
     margin: 20px 0;
 }
@@ -106,7 +110,7 @@ body {
 input, select, textarea {
     background: #11131a;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 0;
     padding: 8px 10px;
     color: var(--text);
 }
@@ -114,7 +118,7 @@ input, select, textarea {
 button {
     background: var(--accent);
     border: none;
-    border-radius: 8px;
+    border-radius: 0;
     color: white;
     font-weight: 600;
     padding: 10px 16px;
@@ -129,6 +133,10 @@ button.danger {
 .link {
     color: var(--accent-2);
     text-decoration: none;
+    display: inline-block;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    background: transparent;
 }
 
 .link:hover {
@@ -139,11 +147,23 @@ button.danger {
     overflow-x: auto;
 }
 
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid var(--border);
+}
+
 th, td {
     padding: 10px 12px;
     border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
     text-align: left;
     font-size: 0.9rem;
+}
+
+th:last-child,
+td:last-child {
+    border-right: none;
 }
 
 .muted {
@@ -152,7 +172,7 @@ th, td {
 
 .preview {
     max-width: 100%;
-    border-radius: 10px;
+    border-radius: 0;
     border: 1px solid var(--border);
 }
 
@@ -177,7 +197,7 @@ th, td {
 
 .flash {
     padding: 10px 12px;
-    border-radius: 8px;
+    border-radius: 0;
     border: 1px solid var(--border);
 }
 
